@@ -1,10 +1,133 @@
 @startuml
-abstract        abstract
-abstract class  "abstract class"
-annotation      annotation
-class           class
-entity          entity
-enum            enum
-interface       interface
 
+
+interface       Collection {
+add(E e)
+addAll(Collection<? extends E> c)
+clear()
+contains(Object o)
+containsAll(Collection<?> c)
+equals(Object o)
+hashCode()
+isEmpty()
+iterator()
+parallelStream()
+remove(Object o)
+removeAll(Collection<?> c)
+removeIf(Predicate<? super E> filter)
+retainAll(Collection<?> c)
+size()
+spliterator()
+stream()
+toArray()
+toArray(IntFunction<T[]> generator)
+toArray(T[] a)
+}
+
+interface       List {
+add(int index, E element)
+addAll(int index, Collection<? extends E> c)
+copyOf(Collection<? extends E> coll)
+get(int index)
+indexOf(Object o)
+lastIndexOf(Object o)
+listIterator()
+listIterator(int index)
+of()
+of(E e1)
+of(E... elements)
+of(E e1, E e2)
+of(E e1, E e2, E e3)
+of(E e1, E e2, E e3, E e4)
+of(E e1, E e2, E e3, E e4, E e5)
+of(E e1, E e2, E e3, E e4, E e5, E e6)
+of(E e1, E e2, E e3, E e4, E e5, E e6, E e7)
+of(E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8)
+of(E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9)
+of(E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9, E e10)
+remove(int index)
+replaceAll(UnaryOperator<E> operator)
+set(int index, E element)
+sort(Comparator<? super E> c)
+subList(int fromIndex, int toIndex)
+}
+
+interface       Set {
+copyOf(Collection<? extends E> coll)
+of()
+of(E e1)
+of(E... elements)
+of(E e1, E e2)
+of(E e1, E e2, E e3)
+of(E e1, E e2, E e3, E e4)
+of(E e1, E e2, E e3, E e4, E e5)
+of(E e1, E e2, E e3, E e4, E e5, E e6)
+of(E e1, E e2, E e3, E e4, E e5, E e6, E e7)
+of(E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8)
+of(E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9)
+of(E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9, E e10)
+}
+
+interface       Queue{
+element()
+offer(E e)
+peek()
+poll()
+remove()
+}
+
+interface       Map{
+clear()
+compute(K key, BiFunction<? super K,? super V,? extends V> remappingFunction)
+computeIfAbsent(K key, Function<? super K,? extends V> mappingFunction)
+computeIfPresent(K key, BiFunction<? super K,? super V,? extends V> remappingFunction)
+containsKey(Object key)
+containsValue(Object value)
+copyOf(Map<? extends K,? extends V> map)
+entry(K k, V v)
+entrySet()
+equals(Object o)
+forEach(BiConsumer<? super K,? super V> action)
+get(Object key)
+getOrDefault(Object key, V defaultValue)
+hashCode()
+isEmpty()
+keySet()
+merge(K key, V value, BiFunction<? super V,? super V,? extends V> remappingFunction)
+of()
+of(K k1, V v1)
+of(K k1, V v1, K k2, V v2)
+of(K k1, V v1, K k2, V v2, K k3, V v3)
+of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4)
+of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5)
+of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6)
+of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7)
+of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8)
+V v9)
+V v9, K k10, V v10)
+ofEntries(Map.Entry<? extends K,? extends V>... entries)
+put(K key, V value)
+putAll(Map<? extends K,? extends V> m)
+putIfAbsent(K key, V value)
+remove(Object key)
+remove(Object key, Object value)
+replace(K key, V value)
+replace(K key, V oldValue, V newValue)
+replaceAll(BiFunction<? super K,? super V,? extends V> function)
+size()
+values()
+}
+
+
+class           ArrayList
+
+Collection <|-- List
+Collection <|-- Set
+Collection <|-- Queue
+Queue <|--  ArrayDeque
+List <|-- ArrayList
+List <|-- LinkedList
+Queue <|--- LinkedList
+Set <|-- HashSet
+Map <|-- HashMap
 @enduml
