@@ -10,6 +10,10 @@ type ArrayList[E any] struct {
 	elementData []E
 }
 
+func (arrayList *ArrayList[E]) Iterator() []E {
+	return arrayList.elementData
+}
+
 func NewArrayList[E any]() ArrayList[E] {
 	var a = make([]E, 0)
 	return ArrayList[E]{elementData: a}
@@ -24,7 +28,7 @@ func (arrayList *ArrayList[E]) Clear() {
 }
 
 func (arrayList *ArrayList[E]) Contains(o E) bool {
-	for _, v := range arrayList.elementData {
+	for _, v := range arrayList.Iterator() {
 		if reflect.DeepEqual(v, o) {
 			return true
 		}
@@ -32,8 +36,8 @@ func (arrayList *ArrayList[E]) Contains(o E) bool {
 	return false
 }
 
-func (arrayList *ArrayList[E]) ContainsAll(c ArrayList[E]) bool {
-	for _, v := range c.elementData {
+func (arrayList *ArrayList[E]) ContainsAll(c Iterable[E]) bool {
+	for _, v := range c.Iterator() {
 		if !arrayList.Contains(v) {
 			return false
 		}
@@ -54,9 +58,9 @@ func (arrayList *ArrayList[E]) RemoveEntity(o any) bool {
 	return true
 }
 
-func (arrayList *ArrayList[E]) RemoveAll(c ArrayList[E]) bool {
+func (arrayList *ArrayList[E]) RemoveAll(c Iterable[E]) bool {
 	var result = false
-	for _, v := range c.elementData {
+	for _, v := range c.Iterator() {
 		removed := arrayList.RemoveEntity(v)
 		if removed {
 			result = true
@@ -79,7 +83,7 @@ func (arrayList *ArrayList[E]) Get(index int) (E, error) {
 }
 
 func (arrayList *ArrayList[E]) IndexOf(o any) int {
-	for i, v := range arrayList.elementData {
+	for i, v := range arrayList.Iterator() {
 		if reflect.DeepEqual(v, o) {
 			return i
 		}

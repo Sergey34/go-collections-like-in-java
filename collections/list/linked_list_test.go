@@ -6,26 +6,26 @@ import (
 	"testing"
 )
 
-func TestArrayList_Add(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_Add(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	assert.For(t).ThatActual(l.Size()).Equals(1)
 	get, _ := l.Get(0)
 	assert.For(t).ThatActual(get).Equals(42)
 }
 
-func TestArrayList_MultiAdd(t *testing.T) {
-	l := list.NewArrayList[int]()
-	l.Add(42)
-	l.Add(42)
-	l.Add(42)
+func TestLinkedList_MultiAdd(t *testing.T) {
+	l := list.NewLinkedList[int]()
+	l.Add(1)
+	l.Add(2)
+	l.Add(3)
 	assert.For(t).ThatActual(l.Size()).Equals(3)
 	get, _ := l.Get(1)
-	assert.For(t).ThatActual(get).Equals(42)
+	assert.For(t).ThatActual(get).Equals(2)
 }
 
-func TestArrayList_GetOutOfBound(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_GetOutOfBound(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(42)
 	l.Add(42)
@@ -33,8 +33,8 @@ func TestArrayList_GetOutOfBound(t *testing.T) {
 	assert.For(t).ThatActualError(err).IsNotNil()
 }
 
-func TestArrayList_Clear(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_Clear(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(42)
 	l.Add(42)
@@ -45,8 +45,8 @@ func TestArrayList_Clear(t *testing.T) {
 	assert.For(t).ThatActual(empty).Equals(true)
 }
 
-func TestArrayList_Set(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_Set(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(42)
 	l.Add(42)
@@ -58,8 +58,8 @@ func TestArrayList_Set(t *testing.T) {
 	assert.For(t).ThatActual(get).Equals(22)
 }
 
-func TestArrayList_SetNoOldValue(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_SetNoOldValue(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(42)
 	l.Add(42)
@@ -70,8 +70,8 @@ func TestArrayList_SetNoOldValue(t *testing.T) {
 	assert.For(t).ThatActual(get).Equals(22)
 }
 
-func TestArrayList_IsEmpty(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_IsEmpty(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(42)
 	l.Add(42)
@@ -80,8 +80,8 @@ func TestArrayList_IsEmpty(t *testing.T) {
 	assert.For(t).ThatActual(empty).IsFalse()
 }
 
-func TestArrayList_Remove(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_Remove(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(43)
 	l.Add(44)
@@ -92,8 +92,8 @@ func TestArrayList_Remove(t *testing.T) {
 	assert.For(t).ThatActual(l.Size()).Equals(2)
 }
 
-func TestArrayList_SubList(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_SubList(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(43)
 	l.Add(44)
@@ -104,8 +104,8 @@ func TestArrayList_SubList(t *testing.T) {
 	assert.For(t).ThatActual(l.Size()).Equals(3)
 }
 
-func TestArrayList_Contains(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_Contains(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(43)
 	l.Add(44)
@@ -114,18 +114,18 @@ func TestArrayList_Contains(t *testing.T) {
 	assert.For(t).ThatActual(l.Contains(46)).IsFalse()
 }
 
-func TestArrayList_ContainsAll(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_ContainsAll(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(43)
 	l.Add(44)
 	assert.For(t).ThatActual(l.Size()).Equals(3)
 
-	ll := list.NewArrayList[int]()
+	ll := list.NewLinkedList[int]()
 	ll.Add(42)
 	ll.Add(43)
 	assert.For(t).ThatActual(l.ContainsAll(&ll)).IsTrue()
-	lll := list.NewArrayList[int]()
+	lll := list.NewLinkedList[int]()
 	lll.Add(42)
 	lll.Add(42)
 	lll.Add(42)
@@ -133,8 +133,8 @@ func TestArrayList_ContainsAll(t *testing.T) {
 	assert.For(t).ThatActual(l.ContainsAll(&lll)).IsFalse()
 }
 
-func TestArrayList_IndexOf(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_IndexOf(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(43)
 	l.Add(44)
@@ -145,8 +145,8 @@ func TestArrayList_IndexOf(t *testing.T) {
 	assert.For(t).ThatActual(l.IndexOf(46)).Equals(-1)
 }
 
-func TestArrayList_LastIndexOf(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_LastIndexOf(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(43)
 	l.Add(44)
@@ -157,8 +157,8 @@ func TestArrayList_LastIndexOf(t *testing.T) {
 	assert.For(t).ThatActual(l.LastIndexOf(46)).Equals(-1)
 }
 
-func TestArrayList_RemoveEntity(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_RemoveEntity(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(43)
 	l.Add(44)
@@ -171,19 +171,19 @@ func TestArrayList_RemoveEntity(t *testing.T) {
 	assert.For(t).ThatActual(l.RemoveEntity(46)).Equals(false)
 }
 
-func TestArrayList_RemoveAll(t *testing.T) {
-	l := list.NewArrayList[int]()
+func TestLinkedList_RemoveAll(t *testing.T) {
+	l := list.NewLinkedList[int]()
 	l.Add(42)
 	l.Add(43)
 	l.Add(44)
 	assert.For(t).ThatActual(l.Size()).Equals(3)
 
-	ll := list.NewArrayList[int]()
+	ll := list.NewLinkedList[int]()
 	ll.Add(42)
 	ll.Add(43)
 	assert.For(t).ThatActual(l.RemoveAll(&ll)).IsTrue()
 	assert.For(t).ThatActual(l.Size()).Equals(1)
-	lll := list.NewArrayList[int]()
+	lll := list.NewLinkedList[int]()
 	lll.Add(42)
 	lll.Add(42)
 	lll.Add(44)
