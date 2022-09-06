@@ -3,6 +3,7 @@ package list
 import (
 	"errors"
 	"fmt"
+	"go-collections-like-in-java/collections"
 	"reflect"
 )
 
@@ -10,8 +11,8 @@ type ArrayList[E any] struct {
 	elementData []E
 }
 
-func (arrayList *ArrayList[E]) Iterator() []E {
-	return arrayList.elementData
+func (list *ArrayList[E]) Iterator() []E {
+	return list.elementData
 }
 
 func NewArrayList[E any]() ArrayList[E] {
@@ -19,16 +20,16 @@ func NewArrayList[E any]() ArrayList[E] {
 	return ArrayList[E]{elementData: a}
 }
 
-func (arrayList *ArrayList[E]) Add(e E) {
-	arrayList.elementData = append(arrayList.elementData, e)
+func (list *ArrayList[E]) Add(e E) {
+	list.elementData = append(list.elementData, e)
 }
 
-func (arrayList *ArrayList[E]) Clear() {
-	arrayList.elementData = arrayList.elementData[:0]
+func (list *ArrayList[E]) Clear() {
+	list.elementData = list.elementData[:0]
 }
 
-func (arrayList *ArrayList[E]) Contains(o E) bool {
-	for _, v := range arrayList.Iterator() {
+func (list *ArrayList[E]) Contains(o E) bool {
+	for _, v := range list.Iterator() {
 		if reflect.DeepEqual(v, o) {
 			return true
 		}
@@ -36,32 +37,32 @@ func (arrayList *ArrayList[E]) Contains(o E) bool {
 	return false
 }
 
-func (arrayList *ArrayList[E]) ContainsAll(c Iterable[E]) bool {
+func (list *ArrayList[E]) ContainsAll(c Iterable[E]) bool {
 	for _, v := range c.Iterator() {
-		if !arrayList.Contains(v) {
+		if !list.Contains(v) {
 			return false
 		}
 	}
 	return true
 }
 
-func (arrayList *ArrayList[E]) IsEmpty() bool {
-	return len(arrayList.elementData) == 0
+func (list *ArrayList[E]) IsEmpty() bool {
+	return len(list.elementData) == 0
 }
 
-func (arrayList *ArrayList[E]) RemoveEntity(o any) bool {
-	index := arrayList.IndexOf(o)
+func (list *ArrayList[E]) RemoveEntity(o any) bool {
+	index := list.IndexOf(o)
 	if index < 0 {
 		return false
 	}
-	arrayList.Remove(index)
+	list.Remove(index)
 	return true
 }
 
-func (arrayList *ArrayList[E]) RemoveAll(c Iterable[E]) bool {
+func (list *ArrayList[E]) RemoveAll(c Iterable[E]) bool {
 	var result = false
 	for _, v := range c.Iterator() {
-		removed := arrayList.RemoveEntity(v)
+		removed := list.RemoveEntity(v)
 		if removed {
 			result = true
 		}
@@ -69,21 +70,21 @@ func (arrayList *ArrayList[E]) RemoveAll(c Iterable[E]) bool {
 	return result
 }
 
-func (arrayList *ArrayList[E]) Size() int {
-	return len(arrayList.elementData)
+func (list *ArrayList[E]) Size() int {
+	return len(list.elementData)
 }
 
-func (arrayList *ArrayList[E]) Get(index int) (E, error) {
-	size := len(arrayList.elementData)
+func (list *ArrayList[E]) Get(index int) (E, error) {
+	size := len(list.elementData)
 	if index >= size {
 		var result E
 		return result, errors.New(fmt.Sprintf("index out of range [%v] with length %v", index, size))
 	}
-	return arrayList.elementData[index], nil
+	return list.elementData[index], nil
 }
 
-func (arrayList *ArrayList[E]) IndexOf(o any) int {
-	for i, v := range arrayList.Iterator() {
+func (list *ArrayList[E]) IndexOf(o any) int {
+	for i, v := range list.Iterator() {
 		if reflect.DeepEqual(v, o) {
 			return i
 		}
@@ -91,51 +92,69 @@ func (arrayList *ArrayList[E]) IndexOf(o any) int {
 	return -1
 }
 
-func (arrayList *ArrayList[E]) LastIndexOf(o any) int {
-	for i := arrayList.Size() - 1; i >= 0; i-- {
-		if reflect.DeepEqual(arrayList.elementData[i], o) {
+func (list *ArrayList[E]) LastIndexOf(o any) int {
+	for i := list.Size() - 1; i >= 0; i-- {
+		if reflect.DeepEqual(list.elementData[i], o) {
 			return i
 		}
 	}
 	return -1
 }
 
-func (arrayList *ArrayList[E]) Remove(index int) (E, error) {
-	size := len(arrayList.elementData)
+func (list *ArrayList[E]) Remove(index int) (E, error) {
+	size := len(list.elementData)
 	if index >= size {
 		var result E
 		return result, errors.New(fmt.Sprintf("index out of range [%v] with length %v", index, size))
 	}
-	oldValue := arrayList.elementData[index]
-	arrayList.elementData = append(arrayList.elementData[:index], arrayList.elementData[index+1:]...)
+	oldValue := list.elementData[index]
+	list.elementData = append(list.elementData[:index], list.elementData[index+1:]...)
 	return oldValue, nil
 }
 
-func (arrayList *ArrayList[E]) Set(index int, element E) (E, error) {
-	size := len(arrayList.elementData)
+func (list *ArrayList[E]) Set(index int, element E) (E, error) {
+	size := len(list.elementData)
 	var result E
 	if size == index {
-		arrayList.Add(element)
+		list.Add(element)
 		return result, nil
 	}
 	if size < index {
 		return result, errors.New(fmt.Sprintf("index out of range [%v] with length %v", index, size))
 	}
-	oldValue := arrayList.elementData[index]
-	arrayList.elementData[index] = element
+	oldValue := list.elementData[index]
+	list.elementData[index] = element
 	return oldValue, nil
 }
 
-func (arrayList *ArrayList[E]) SubList(fromIndex int, toIndex int) (ArrayList[E], error) {
+func (list *ArrayList[E]) SubList(fromIndex int, toIndex int) (ArrayList[E], error) {
 	if fromIndex > toIndex {
 		var result ArrayList[E]
 		return result, errors.New(fmt.Sprintf("toIndex should be > fromIndex. fromIndex: %v toIndex: %v", fromIndex, toIndex))
 	}
-	size := len(arrayList.elementData)
+	size := len(list.elementData)
 	if toIndex > size {
 		var result ArrayList[E]
 		return result, errors.New(fmt.Sprintf("index out of range [%v] with length %v", toIndex, size))
 	}
-	newList := arrayList.elementData[fromIndex:toIndex]
+	newList := list.elementData[fromIndex:toIndex]
 	return ArrayList[E]{elementData: newList}, nil
+}
+
+func (list *ArrayList[E]) ContainsByFilter(contains collections.Filter) bool {
+	for _, v := range list.Iterator() {
+		if contains(v) {
+			return true
+		}
+	}
+	return false
+}
+
+func (list *ArrayList[E]) Find(filter collections.Filter) (E, bool) {
+	for _, v := range list.Iterator() {
+		if filter(v) {
+			return v, true
+		}
+	}
+	return nil, false
 }

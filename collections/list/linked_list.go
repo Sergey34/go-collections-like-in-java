@@ -3,6 +3,7 @@ package list
 import (
 	"errors"
 	"fmt"
+	"go-collections-like-in-java/collections"
 	"reflect"
 )
 
@@ -10,6 +11,35 @@ type LinkedList[E any] struct {
 	first *Node[E]
 	last  *Node[E]
 	size  int
+}
+
+func (list *LinkedList[E]) Element() (E, error) {
+	return list.Get(0)
+}
+
+func (list *LinkedList[E]) Offer(e E) (bool, error) {
+	list.Add(e)
+	return true, nil
+}
+
+func (list *LinkedList[E]) Peek() E {
+	get, err := list.Get(0)
+	if err != nil {
+		return nil
+	}
+	return get
+}
+
+func (list *LinkedList[E]) Poll() E {
+	get, err := list.Remove(0)
+	if err != nil {
+		return nil
+	}
+	return get
+}
+
+func (list *LinkedList[E]) RemoveFirst() (E, error) {
+	return list.Remove(0)
 }
 
 type Node[E any] struct {
@@ -22,11 +52,11 @@ func NewLinkedList[E any]() LinkedList[E] {
 	return LinkedList[E]{size: 0}
 }
 
-func (linkedList *LinkedList[E]) Iterator() []E {
+func (list *LinkedList[E]) Iterator() []E {
 	result := make([]E, 0)
-	if linkedList.size != 0 {
-		var current = linkedList.first
-		for i := 0; i < linkedList.size; i++ {
+	if list.size != 0 {
+		var current = list.first
+		for i := 0; i < list.size; i++ {
 			data := current.data
 			result = append(result, *data)
 			current = current.next
@@ -35,44 +65,44 @@ func (linkedList *LinkedList[E]) Iterator() []E {
 	return result
 }
 
-func (linkedList *LinkedList[E]) Add(e E) {
+func (list *LinkedList[E]) Add(e E) {
 
-	if linkedList.size == 0 {
+	if list.size == 0 {
 		newNode := Node[E]{
 			data:     &e,
 			next:     nil,
 			previous: nil,
 		}
-		linkedList.first = &newNode
-		linkedList.last = &newNode
-		linkedList.size++
+		list.first = &newNode
+		list.last = &newNode
+		list.size++
 		return
 	}
 	newNode := Node[E]{
 		data:     &e,
 		next:     nil,
-		previous: linkedList.last,
+		previous: list.last,
 	}
-	if linkedList.size == 1 {
-		linkedList.last = &newNode
-		linkedList.first.next = &newNode
+	if list.size == 1 {
+		list.last = &newNode
+		list.first.next = &newNode
 	} else {
-		linkedList.last.next = &newNode
-		linkedList.last = &newNode
+		list.last.next = &newNode
+		list.last = &newNode
 	}
-	linkedList.size++
+	list.size++
 }
 
-func (linkedList *LinkedList[E]) Clear() {
-	linkedList.size = 0
+func (list *LinkedList[E]) Clear() {
+	list.size = 0
 	var null Node[E]
-	linkedList.first = &null
-	linkedList.last = &null
+	list.first = &null
+	list.last = &null
 }
 
-func (linkedList *LinkedList[E]) Contains(o E) bool {
-	var current = linkedList.first
-	for i := 0; i < linkedList.size; i++ {
+func (list *LinkedList[E]) Contains(o E) bool {
+	var current = list.first
+	for i := 0; i < list.size; i++ {
 		data := current.data
 		if reflect.DeepEqual(*data, o) {
 			return true
@@ -82,31 +112,31 @@ func (linkedList *LinkedList[E]) Contains(o E) bool {
 	return false
 }
 
-func (linkedList *LinkedList[E]) ContainsAll(c Iterable[E]) bool {
+func (list *LinkedList[E]) ContainsAll(c Iterable[E]) bool {
 	for _, v := range c.Iterator() {
-		if !linkedList.Contains(v) {
+		if !list.Contains(v) {
 			return false
 		}
 	}
 	return true
 }
 
-func (linkedList *LinkedList[E]) IsEmpty() bool {
-	return linkedList.size == 0
+func (list *LinkedList[E]) IsEmpty() bool {
+	return list.size == 0
 }
 
-func (linkedList *LinkedList[E]) RemoveEntity(o any) bool {
-	var current = linkedList.first
-	for i := 0; i < linkedList.size; i++ {
+func (list *LinkedList[E]) RemoveEntity(o any) bool {
+	var current = list.first
+	for i := 0; i < list.size; i++ {
 		data := current.data
 		if reflect.DeepEqual(*data, o) {
 			if i == 0 {
-				linkedList.first = current.next
+				list.first = current.next
 				current.previous = nil
 			} else {
 				current.previous.next = current.next
 			}
-			linkedList.size--
+			list.size--
 			return true
 		}
 		current = current.next
@@ -114,10 +144,10 @@ func (linkedList *LinkedList[E]) RemoveEntity(o any) bool {
 	return false
 }
 
-func (linkedList *LinkedList[E]) RemoveAll(c Iterable[E]) bool {
+func (list *LinkedList[E]) RemoveAll(c Iterable[E]) bool {
 	var result = false
 	for _, v := range c.Iterator() {
-		removed := linkedList.RemoveEntity(v)
+		removed := list.RemoveEntity(v)
 		if removed {
 			result = true
 		}
@@ -125,49 +155,49 @@ func (linkedList *LinkedList[E]) RemoveAll(c Iterable[E]) bool {
 	return result
 }
 
-func (linkedList *LinkedList[E]) Size() int {
-	return linkedList.size
+func (list *LinkedList[E]) Size() int {
+	return list.size
 }
 
-func (linkedList *LinkedList[E]) Get(index int) (E, error) {
-	if index >= linkedList.size {
+func (list *LinkedList[E]) Get(index int) (E, error) {
+	if index >= list.size {
 		var result E
-		return result, errors.New(fmt.Sprintf("index out of range [%v] with length %v", index, linkedList.size))
+		return result, errors.New(fmt.Sprintf("index out of range [%v] with length %v", index, list.size))
 	}
 	if index == 0 {
-		return *linkedList.first.data, nil
+		return *list.first.data, nil
 	}
-	if index == linkedList.size {
-		return *linkedList.last.data, nil
+	if index == list.size {
+		return *list.last.data, nil
 	}
-	current := linkedList.first
+	current := list.first
 	for i := 0; i < index; i++ {
 		current = current.next
 	}
 	return *current.data, nil
 }
 
-func (linkedList *LinkedList[E]) getNode(index int) (Node[E], error) {
-	if index >= linkedList.size {
+func (list *LinkedList[E]) getNode(index int) (Node[E], error) {
+	if index >= list.size {
 		var result Node[E]
-		return result, errors.New(fmt.Sprintf("index out of range [%v] with length %v", index, linkedList.size))
+		return result, errors.New(fmt.Sprintf("index out of range [%v] with length %v", index, list.size))
 	}
 	if index == 0 {
-		return *linkedList.first, nil
+		return *list.first, nil
 	}
-	if index == linkedList.size {
-		return *linkedList.last, nil
+	if index == list.size {
+		return *list.last, nil
 	}
-	current := linkedList.first
+	current := list.first
 	for i := 0; i < index; i++ {
 		current = current.next
 	}
 	return *current, nil
 }
 
-func (linkedList *LinkedList[E]) IndexOf(o any) int {
-	current := linkedList.first
-	for i := 0; i < linkedList.size; i++ {
+func (list *LinkedList[E]) IndexOf(o any) int {
+	current := list.first
+	for i := 0; i < list.size; i++ {
 		if reflect.DeepEqual(*current.data, o) {
 			return i
 		}
@@ -176,9 +206,9 @@ func (linkedList *LinkedList[E]) IndexOf(o any) int {
 	return -1
 }
 
-func (linkedList *LinkedList[E]) LastIndexOf(o any) int {
-	current := linkedList.last
-	for i := linkedList.size - 1; i >= 0; i-- {
+func (list *LinkedList[E]) LastIndexOf(o any) int {
+	current := list.last
+	for i := list.size - 1; i >= 0; i-- {
 		if reflect.DeepEqual(*current.data, o) {
 			return i
 		}
@@ -187,33 +217,33 @@ func (linkedList *LinkedList[E]) LastIndexOf(o any) int {
 	return -1
 }
 
-func (linkedList *LinkedList[E]) Remove(index int) (E, error) {
-	size := linkedList.size
+func (list *LinkedList[E]) Remove(index int) (E, error) {
+	size := list.size
 	if index >= size {
 		var result E
 		return result, errors.New(fmt.Sprintf("index out of range [%v] with length %v", index, size))
 	}
-	node, e := linkedList.getNode(index)
+	node, e := list.getNode(index)
 	if e != nil {
 		var result E
 		return result, e
 	}
 	node.previous.next = node.next
-	linkedList.size--
+	list.size--
 	return *node.data, nil
 }
 
-func (linkedList *LinkedList[E]) Set(index int, element E) (E, error) {
-	size := linkedList.size
+func (list *LinkedList[E]) Set(index int, element E) (E, error) {
+	size := list.size
 	var result E
 	if size == index {
-		linkedList.Add(element)
+		list.Add(element)
 		return result, nil
 	}
 	if size < index {
 		return result, errors.New(fmt.Sprintf("index out of range [%v] with length %v", index, size))
 	}
-	node, e := linkedList.getNode(index)
+	node, e := list.getNode(index)
 	if e != nil {
 		var result E
 		return result, e
@@ -223,17 +253,17 @@ func (linkedList *LinkedList[E]) Set(index int, element E) (E, error) {
 	return oldData, nil
 }
 
-func (linkedList *LinkedList[E]) SubList(fromIndex int, toIndex int) (LinkedList[E], error) {
+func (list *LinkedList[E]) SubList(fromIndex int, toIndex int) (LinkedList[E], error) {
 	if fromIndex > toIndex {
 		var result LinkedList[E]
 		return result, errors.New(fmt.Sprintf("toIndex should be > fromIndex. fromIndex: %v toIndex: %v", fromIndex, toIndex))
 	}
-	size := linkedList.size
+	size := list.size
 	if toIndex > size {
 		var result LinkedList[E]
 		return result, errors.New(fmt.Sprintf("index out of range [%v] with length %v", toIndex, size))
 	}
-	current := linkedList.first
+	current := list.first
 	var firstNode Node[E]
 	for i := 0; i < toIndex; i++ {
 		if i == fromIndex {
@@ -242,7 +272,7 @@ func (linkedList *LinkedList[E]) SubList(fromIndex int, toIndex int) (LinkedList
 		current = current.next
 	}
 	firstNode.previous = nil
-	if toIndex != linkedList.size {
+	if toIndex != list.size {
 		current.next = nil
 	}
 	return LinkedList[E]{
@@ -250,4 +280,24 @@ func (linkedList *LinkedList[E]) SubList(fromIndex int, toIndex int) (LinkedList
 		last:  current,
 		size:  toIndex - fromIndex,
 	}, nil
+}
+
+func (list *LinkedList[E]) ContainsByFilter(contains collections.Filter) bool {
+	for _, v := range list.Iterator() {
+		if contains(v) {
+			return true
+		}
+	}
+	return false
+}
+
+func (list *LinkedList[E]) Find(filter collections.Filter) (E, bool) {
+	current := list.first
+	for i := 0; i < list.size; i++ {
+		if filter(current.data) {
+			return *current.data, true
+		}
+		current = current.next
+	}
+	return nil, false
 }
