@@ -6,13 +6,13 @@ import (
 )
 
 type HashSet[E java_map.Hashable] struct {
-	hashMap java_map.HashMap[E, types.Struct]
+	hashMap *java_map.HashMap[E, types.Struct]
 	t       types.Struct
 }
 
 func NewHashSet[E java_map.Hashable]() HashSet[E] {
 	var hashMap = java_map.NewHashMap[E, types.Struct]()
-	return HashSet[E]{hashMap: hashMap, t: types.Struct{}}
+	return HashSet[E]{hashMap: &hashMap, t: types.Struct{}}
 }
 
 func (h HashSet[E]) Add(e E) {

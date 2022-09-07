@@ -7,7 +7,7 @@ import (
 )
 
 type HashMap[K Hashable, V any] struct {
-	table []list.LinkedList[Node[K, V]]
+	table *[]*list.LinkedList[Node[K, V]]
 	size  int
 }
 
@@ -18,58 +18,70 @@ type Node[K Hashable, V any] struct {
 }
 
 type Hashable interface {
-	hashCode() int
+	HashCode() int
 }
 
 func NewHashMap[K Hashable, V any]() HashMap[K, V] {
-	var table = make([]list.LinkedList[Node[K, V]], 10)
-	return HashMap[K, V]{table: table}
+	var table = make([]*list.LinkedList[Node[K, V]], 10)
+	for i := 0; i < 10; i++ {
+		linkedList := list.NewLinkedList[Node[K, V]]()
+		table[i] = &linkedList
+	}
+	return HashMap[K, V]{table: &table}
 }
 
-func (hashMap HashMap[K, V]) Clear() {
-	hashMap.table = make([]list.LinkedList[Node[K, V]], 10)
+func (hashMap *HashMap[K, V]) Clear() {
+	table := make([]*list.LinkedList[Node[K, V]], 10)
+	for i := 0; i < 10; i++ {
+		linkedList := list.NewLinkedList[Node[K, V]]()
+		table[i] = &linkedList
+	}
+	hashMap.table = &table
 }
 
-func (hashMap HashMap[K, V]) ContainsKey(key K) bool {
+func (hashMap *HashMap[K, V]) ContainsKey(key K) bool {
 	bucket := hashMap.getBucket(key)
-	nodes := hashMap.table[bucket]
+	nodes := *(*hashMap.table)[bucket]
 	var null list.LinkedList[Node[K, V]]
 	if nodes == null {
 		return false
 	}
 	return nodes.ContainsByFilter(func(node any) bool {
-		n := node.(Node[K, V])
-		return n.hash == key.hashCode() && reflect.DeepEqual(n.key, key)
+		n := node.(*Node[K, V])
+		return n.hash == key.HashCode() && reflect.DeepEqual(n.key, key)
 	})
 }
 
-func (hashMap HashMap[K, V]) Get(key K) (V, bool) {
+func (hashMap *HashMap[K, V]) Get(key K) (V, bool) {
 	bucket := hashMap.getBucket(key)
-	nodes := hashMap.table[bucket]
+	nodes := *(*hashMap.table)[bucket]
 	var null list.LinkedList[Node[K, V]]
 	if nodes == null {
-		return nil, false
+		var nulll V
+		return nulll, false
 	}
 	node, found := nodes.Find(func(node any) bool {
-		n := node.(Node[K, V])
-		return n.hash == key.hashCode() && reflect.DeepEqual(n.key, key)
+		n := node.(*Node[K, V])
+		return n.hash == key.HashCode() && reflect.DeepEqual(n.key, key)
 	})
 	if found {
 		return node.value, true
 	}
-	return nil, false
+	var nulll V
+	return nulll, false
 }
-func (hashMap HashMap[K, V]) GetNode(key K) (Node[K, V], bool) {
+func (hashMap *HashMap[K, V]) GetNode(key K) (Node[K, V], bool) {
 	bucket := hashMap.getBucket(key)
-	nodes := hashMap.table[bucket]
+	tables := *hashMap.table
+	nodes := *tables[bucket]
 	var null list.LinkedList[Node[K, V]]
 	var n Node[K, V]
 	if nodes == null {
 		return n, false
 	}
 	node, found := nodes.Find(func(node any) bool {
-		n := node.(Node[K, V])
-		return n.hash == key.hashCode() && reflect.DeepEqual(n.key, key)
+		n := node.(*Node[K, V])
+		return n.hash == key.HashCode() && reflect.DeepEqual(n.key, key)
 	})
 	if found {
 		return node, true
@@ -77,7 +89,7 @@ func (hashMap HashMap[K, V]) GetNode(key K) (Node[K, V], bool) {
 	return n, false
 }
 
-func (hashMap HashMap[K, V]) GetOrDefault(key K, defaultValue V) V {
+func (hashMap *HashMap[K, V]) GetOrDefault(key K, defaultValue V) V {
 	node, found := hashMap.Get(key)
 	if found {
 		return node
@@ -85,13 +97,13 @@ func (hashMap HashMap[K, V]) GetOrDefault(key K, defaultValue V) V {
 	return defaultValue
 }
 
-func (hashMap HashMap[K, V]) IsEmpty() bool {
+func (hashMap *HashMap[K, V]) IsEmpty() bool {
 	return hashMap.size == 0
 }
 
-func (hashMap HashMap[K, V]) KeySet() []K {
+func (hashMap *HashMap[K, V]) KeySet() []K {
 	result := make([]K, 0, hashMap.size)
-	for _, nodes := range hashMap.table {
+	for _, nodes := range *hashMap.table {
 		for _, node := range nodes.Iterator() {
 			result = append(result, node.key)
 		}
@@ -99,9 +111,9 @@ func (hashMap HashMap[K, V]) KeySet() []K {
 	return result
 }
 
-func (hashMap HashMap[K, V]) Put(key K, value V) V {
+func (hashMap *HashMap[K, V]) Put(key K, value V) V {
 	bucket := hashMap.getBucket(key)
-	nodes := hashMap.table[bucket]
+	nodes := (*hashMap.table)[bucket]
 	oldNode, found := hashMap.GetNode(key)
 	if found {
 		oldValue := oldNode.value
@@ -109,34 +121,38 @@ func (hashMap HashMap[K, V]) Put(key K, value V) V {
 		return oldValue
 	}
 	nodes.Add(Node[K, V]{
-		hash:  key.hashCode(),
+		hash:  key.HashCode(),
 		key:   key,
 		value: value,
 	})
-	return nil
+	hashMap.size++
+	var nulll V
+	return nulll
 }
 
-func (hashMap HashMap[K, V]) Remove(key K) V {
+func (hashMap *HashMap[K, V]) Remove(key K) V {
 	bucket := hashMap.getBucket(key)
-	nodes := hashMap.table[bucket]
+	nodes := (*hashMap.table)[bucket]
 	node, found := nodes.Find(func(node any) bool {
-		n := node.(Node[K, V])
-		return n.hash == key.hashCode() && reflect.DeepEqual(n.key, key)
+		n := node.(*Node[K, V])
+		return n.hash == key.HashCode() && reflect.DeepEqual(n.key, key)
 	})
 	if found {
+		hashMap.size--
 		nodes.RemoveEntity(node)
 		return node.value
 	}
-	return nil
+	var nulll V
+	return nulll
 }
 
-func (hashMap HashMap[K, V]) Size() int {
+func (hashMap *HashMap[K, V]) Size() int {
 	return hashMap.size
 }
 
-func (hashMap HashMap[K, V]) Values() []V {
+func (hashMap *HashMap[K, V]) Values() []V {
 	result := make([]V, 0, hashMap.size)
-	for _, nodes := range hashMap.table {
+	for _, nodes := range *hashMap.table {
 		for _, node := range nodes.Iterator() {
 			result = append(result, node.value)
 		}
@@ -144,6 +160,6 @@ func (hashMap HashMap[K, V]) Values() []V {
 	return result
 }
 
-func (hashMap HashMap[K, V]) getBucket(key K) int {
-	return key.hashCode() % hashMap.Size()
+func (hashMap *HashMap[K, V]) getBucket(key K) int {
+	return key.HashCode() % len(*hashMap.table)
 }

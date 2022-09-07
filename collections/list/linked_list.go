@@ -25,7 +25,8 @@ func (list *LinkedList[E]) Offer(e E) (bool, error) {
 func (list *LinkedList[E]) Peek() E {
 	get, err := list.Get(0)
 	if err != nil {
-		return nil
+		var null E
+		return null
 	}
 	return get
 }
@@ -33,7 +34,8 @@ func (list *LinkedList[E]) Peek() E {
 func (list *LinkedList[E]) Poll() E {
 	get, err := list.Remove(0)
 	if err != nil {
-		return nil
+		var null E
+		return null
 	}
 	return get
 }
@@ -66,7 +68,6 @@ func (list *LinkedList[E]) Iterator() []E {
 }
 
 func (list *LinkedList[E]) Add(e E) {
-
 	if list.size == 0 {
 		newNode := Node[E]{
 			data:     &e,
@@ -299,5 +300,6 @@ func (list *LinkedList[E]) Find(filter collections.Filter) (E, bool) {
 		}
 		current = current.next
 	}
-	return nil, false
+	var null E
+	return null, false
 }

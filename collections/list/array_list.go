@@ -156,5 +156,6 @@ func (list *ArrayList[E]) Find(filter collections.Filter) (E, bool) {
 			return v, true
 		}
 	}
-	return nil, false
+	var null E
+	return null, false
 }
